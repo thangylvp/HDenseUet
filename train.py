@@ -187,16 +187,20 @@ def train_model(model, dataGen, criterion, optimizer, num_epochs=25):
         for idx, (inputs, labels) in enumerate(dataGen):
             inputs = inputs.to(device)
             labels = labels.to(device)
-            print('dtype : ', inputs.dtype)
+            
+            # print('dtype : ', inputs.dtype)
 
             # zero the parameter gradients
+            print("idx : --------------")
             optimizer.zero_grad()
             outputs = model(inputs)
+            # labels = torch.randn(outputs.shape).to(device)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-
+            print("loss : ", loss.item())
             running_loss += loss.item() * inputs.size(0)
+            
 
         epoch_loss = running_loss / len(dataGen)
 
@@ -210,6 +214,7 @@ if __name__ == "__main__":
 
     model = HDenseUnet.dense_rnn_net(8).to('cuda')
     loss = torch.nn.CrossEntropyLoss(weight=torch.tensor((0.78, 0.65, 8.57), device='cuda'), reduction='mean')
+    # loss = torch.nn.MSELoss(reduction='sum')
     opt = torch.optim.SGD(model.parameters(), lr= 1e-3, momentum= 0.9)
 
     train_model(model, testGen, loss, opt)

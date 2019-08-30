@@ -319,12 +319,12 @@ class dense_rnn_net(nn.Module):
         final2d = self.conv2d5(feature2d)
 
         
-        input3d = final2d.permute(1, 0, 2, 3)
-        feature2d = feature2d.permute(1, 0, 2, 3)
+        input3d = final2d.clone().permute(1, 0, 2, 3)
+        feature2d = feature2d.clone().permute(1, 0, 2, 3)
         input3d.unsqueeze_(0)
         feature2d.unsqueeze_(0)
         
-        x_tmp = x.unsqueeze(0)
+        x_tmp = x.clone().unsqueeze(0)
         x_tmp *= 250.0
 
 
@@ -332,15 +332,16 @@ class dense_rnn_net(nn.Module):
 
         feature3d = self.dense3d(input3d)
         output3d = self.conv3d5(feature3d)
-
+        
         final = torch.add(feature2d, feature3d)
 
-        final = self.finalConv3d1(final)
+        finalout = self.finalConv3d1(final)
         if (self.drop > 0):
-            final = F.dropout(final, p= self.drop)
+            finalout = F.dropout(finalout, p= self.drop)
         
-        final = self.finalBn(final)
-        final = self.finalAc(final)
-        final = self.finalConv3d2(final)
-
-        return final
+        finalout = self.finalBn(finalout)
+        finalout = self.finalAc(finalout)
+        finalout = self.finalConv3d2(finalout)
+        
+        return finalout
+        # return output3d

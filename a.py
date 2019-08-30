@@ -324,7 +324,9 @@ class dense_rnn_net(nn.Module):
         input3d.unsqueeze_(0)
         feature2d.unsqueeze_(0)
         
-        x_tmp = x.permute(0, 4, 3, 1, 2)
+        
+
+        x_tmp = x.copy().permute(0, 4, 3, 1, 2)
         x_tmp *= 250.0
 
 
